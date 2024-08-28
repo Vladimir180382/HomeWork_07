@@ -6,4 +6,11 @@
         <attr name="centerTextColor" format="color" />
 
     </declare-styleable>
+    <declare-styleable name="CustomLineChartView">
+        <attr name="minWidth" format="dimension" />
+        <attr name="minHeight" format="dimension" />
+        <attr name="axisTextSize" format="dimension" />
+        <attr name="valueStep" format="float" />
+        <attr name="axisColor" format="color" />
+    </declare-styleable>
 </resources>

@@ -1,53 +1,52 @@
-package ru.otus.homework.customview
+package ru.otus.homework.customview.lineChart
 
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import ru.otus.customview.R
-import ru.otus.customview.R.id.pie_chart_view
-import kotlin.math.roundToInt
+import ru.otus.homework.customview.pieChart.PayloadData
 
-class MainActivity : AppCompatActivity() {
+class SecondActivity : AppCompatActivity() {
 
     private val payloadData: List<PayloadData> by readPayloadData()
-    private val pieChartItemList: List<PieChartItem> by lazy {
-        mapPayloadDataToPieChartItem(payloadData)
+    private val lineChartItemList: List<LineChartItem> by lazy {
+        mapPayloadDataToLineChartItem(payloadData)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        val pieChartView = findViewById<CustomViewPieChart>(pie_chart_view).apply {
-            setOnSectionClickListener { section ->
-                val totalAmount = pieChartItemList.sumOf { it.amount }
-                val sectionAmount = section.pieChartItems.sumOf { it.amount }.toFloat()
-                setCenterText("${(sectionAmount / totalAmount * 100).roundToInt()}%")
-            }
-        }
-
+        setContentView(R.layout.activity_second)
+        val lineChartView = findViewById<CustomViewLineChart>(R.id.line_chart_view)
         findViewById<Spinner>(R.id.custom_view_variant).apply {
-            adapter = createSpinnerAdapter()
-            onItemSelectedListener = createSpinnerClickListener(pieChartView)
+            adapter =
+                createSpinnerAdapter()
+            onItemSelectedListener =
+                createSpinnerClickListener(lineChartView)
         }
         if (savedInstanceState == null) {
-            pieChartView.setPieChartItems(pieChartItemList)
+            lineChartView.setLineChartItems(lineChartItemList)
+        }
+        val buttonExit = findViewById<Button>(R.id.button_exit)
+        buttonExit.setOnClickListener {
+            finish()
         }
     }
 
-    private fun mapPayloadDataToPieChartItem(
+    private fun mapPayloadDataToLineChartItem(
         payloadData: List<PayloadData>
-    ): List<PieChartItem> {
+    ): List<LineChartItem> {
         return payloadData.map {
-            PieChartItem(
-                name = it.name,
+            LineChartItem(
                 category = it.category,
-                amount = it.amount
+                amount = it.amount,
+                time = it.time
             )
         }
     }
@@ -69,7 +68,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun createSpinnerClickListener(view: CustomViewPieChart): AdapterView.OnItemSelectedListener {
+    private fun createSpinnerClickListener(
+        lineChartView: CustomViewLineChart
+    ): AdapterView.OnItemSelectedListener {
         return object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
@@ -77,14 +78,12 @@ class MainActivity : AppCompatActivity() {
                 selectedItemPosition: Int,
                 selectedId: Long
             ) {
-                when (selectedItemPosition) {
-                    0 -> view.visibility = ViewGroup.VISIBLE
-                    else -> view.visibility = ViewGroup.GONE
+                if (selectedItemPosition == 0) {
+                    lineChartView.visibility = ViewGroup.VISIBLE
                 }
             }
 
-            override fun onNothingSelected(p0: AdapterView<*>?) {}
-
+            override fun onNothingSelected(parent: AdapterView<*>?) = Unit
         }
     }
 }

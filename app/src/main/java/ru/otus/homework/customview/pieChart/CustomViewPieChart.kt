@@ -1,4 +1,4 @@
-package ru.otus.homework.customview
+package ru.otus.homework.customview.pieChart
 
 import android.annotation.SuppressLint
 import android.content.Context
